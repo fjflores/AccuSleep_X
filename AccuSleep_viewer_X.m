@@ -136,15 +136,25 @@ yl = prctile(abs(G.EEG(1:10:end)),95);
 G.eegYlim = [-2.2*yl, 2.2*yl];
 G.emgYlim = G.eegYlim;
 
-% load our colormap
+% load my (not our) colormap
 try
-    G.colormap = AccuSleep_colormap();
+    G.colormap = magma;
+
 catch
     try
-        G.colormap = parula;
+        G.colormap = AccuSleep_colormap();
+
     catch
-        G.colormap = jet;
+        try
+            G.colormap = parula;
+
+        catch
+            G.colormap = jet;
+
+        end
+
     end
+
 end
 
 %% Make the figure window
@@ -312,17 +322,17 @@ message = 'Data loaded successfully';
             gi = G.nbins-(G.mid-1);
             tp = gi*G.epochLen-G.epochLen/2;
         end
-        
+
         seq=G.labels((1:G.show)+gi-G.mid+(G.mid-gi)*(gi<G.mid)-...
             (gi-G.nbins+(G.mid-1))*(gi>(G.nbins-(G.mid-1))));
         x = -n:n;
-        
+
         cla(G.A7)
         hold(G.A7,'on')
         xlim(G.A7, [-n-0.5 n+0.5]);
         ylim(G.A7, [0.5, G.n_states+.5]);
         set(G.A7, 'XLimMode','manual', 'YLimMode','manual');
-        
+
         for i = 1:length(seq)
             if seq(i)==G.n_states+1
                 pX = [x(i)-.5, x(i)+.5, x(i)+.5, x(i)-.5];
@@ -334,10 +344,10 @@ message = 'Data loaded successfully';
                 patch(G.A7,pX,pY,G.colors(seq(i)+1,:),'EdgeColor','none');
             end
         end
-        
+
         set(G.A7, 'XTickLabel', [],'XTick',[], 'YTick', 1:G.n_states, 'YTickLabel', G.config.cfg_names);
         box(G.A7, 'off');
-        
+
         % plot EEG and EMG
         n = round((G.show*G.epochLen)/G.dt/2); % number of samples on either side to show
         i = round(tp / G.dt);
@@ -345,7 +355,7 @@ message = 'Data loaded successfully';
         t = tp-n*G.dt:G.dt:tp+n*G.dt;
         ii(ii<=0) = 1;
         ii(ii>=G.eegLen) = G.eegLen;
-        
+
         cla(G.A6);
         hold(G.A6, 'on');
         xlim(G.A6,[t(1)-G.dt t(end)]);
@@ -359,7 +369,7 @@ message = 'Data loaded successfully';
             G.emgYlim(1)+.1*diff(G.emgYlim)],'Color','r', 'LineWidth', .5);
         line(G.A6,[G.timepointS-G.epochLen/2, G.timepointS+G.epochLen/2], [G.emgYlim(1) G.emgYlim(1)],...
             'Color','r', 'LineWidth', .5);
-        
+
         cla(G.A6a)
         hold(G.A6a, 'on');
         xlim(G.A6a,[t(1)-G.dt t(end)]);
@@ -373,7 +383,7 @@ message = 'Data loaded successfully';
         line(G.A6a,[G.timepointS-G.epochLen/2, G.timepointS+G.epochLen/2], [G.eegYlim(2) G.eegYlim(2)],...
             'Color','r', 'LineWidth', .5);
         set(G.A6a,'XTick',[],'YTick',[])
-        
+
         % label x axis nicely
         G.A6.XTick = tp-(G.show/2)*G.epochLen + G.epochLen*(0:G.show);
         ticks = G.A6.XTick;
@@ -383,7 +393,7 @@ message = 'Data loaded successfully';
         end
         G.A6.XTickLabel = xlbl;
         set(G.A6, 'YTick', []);
-        
+
         % Plot Progress Button
         tp = G.timepointH; % time in seconds at the center of the screen
         if G.index < G.mid
@@ -397,7 +407,7 @@ message = 'Data loaded successfully';
         hold(G.A2,'on')
         xlim(G.A2,li);
         set(G.A2,'YTick',[],'XTick',[],'XLimMode','manual', 'YLimMode','manual');
-        
+
         % unless we're at the beginning or end
         if G.index < G.mid  || G.nbins - G.index < (G.mid-1)
             plot(G.A2,G.timepointH, 0.5, 'rd', 'LineWidth', 3,'MarkerFaceColor','r');
@@ -412,8 +422,8 @@ message = 'Data loaded successfully';
             line(G.A2,[tp-G.epochLen/3600*(G.show/2),tp+G.epochLen/3600*(G.show/2)], [0.5,0.5],...
                 'Color','r','LineWidth',2);
         end
-        
-        
+
+
         if tp<(li(1)+.35*diff(li)) && li(1) > G.lims(1) % we are far to the left
             xlim(G.A2,li - min([li(1)-G.lims(1), li(1)+.35*diff(li)-tp]))
         else
@@ -456,7 +466,7 @@ message = 'Data loaded successfully';
                     G.timepointH  = G.specTh(G.index);
                     updatePlots;
                 end
-                
+
             case {'leftarrow', 'downarrow'} % move back one time step
                 if G.index > 1
                     G.index = G.index - 1;
@@ -464,7 +474,7 @@ message = 'Data loaded successfully';
                     G.timepointH = G.specTh(G.index);
                     updatePlots;
                 end
-                
+
             case 'pageup' % jump to next bin with undefined state
                 idx = find(G.labels==4);
                 if ~isempty(idx) && any (idx > G.index)
@@ -474,7 +484,7 @@ message = 'Data loaded successfully';
                     G.timepointH = G.specTh(G.index);
                     updatePlots;
                 end
-                
+
             case 'pagedown' % jump to previous bin with undefined state
                 idx = find(G.labels==4);
                 if ~isempty(idx) && any (idx < G.index)
@@ -484,7 +494,7 @@ message = 'Data loaded successfully';
                     G.timepointH = G.specTh(G.index);
                     updatePlots;
                 end
-                
+
             case 'space' % jump to next bin with different state than current bin
                 idx = find(G.labels~=G.labels(G.index));
                 if ~isempty(idx) && any (idx > G.index)
@@ -494,34 +504,34 @@ message = 'Data loaded successfully';
                     G.timepointH = G.specTh(G.index);
                     updatePlots;
                 end
-                
+
             case 'insert' % toggle auto-scroll mode
                 G.advance = ~G.advance;
                 set(G.autobox,'Value',G.advance);
-                
+
             case 'a' % jump to point on spectrogram
                 axes(G.A1);
                 [x, ~] = ginput(1);
                 [G.timepointH, G.index] = findTime(G.specTh, x);
                 G.timepointS = G.specTs(G.index);
                 updatePlots;
-                
+
             case 'add' % zoom in
                 axes(G.A3);
                 curlims = xlim;
                 xlim([max(curlims(1), G.timepointH-.45*diff(curlims)) min(curlims(2),...
                     G.timepointH+.45*diff(curlims))]);
-                
+
             case 'subtract' % zoom out
                 axes(G.A3);
                 curlims = xlim;
                 xlim([max(G.lims(1), G.timepointH-1.017*diff(curlims)) min(G.lims(2),...
                     G.timepointH+1.017*diff(curlims))]);
-                
+
             case 'numpad0' % reset zoom level
                 axes(G.A3);
                 xlim(G.lims);
-                
+
             case {'1','2','3','4','5','6','7','8','9',...
                     'numpad1','numpad2','numpad3','numpad4',...
                     'numpad5','numpad6','numpad7','numpad8',...
@@ -533,21 +543,21 @@ message = 'Data loaded successfully';
                     updateState;
                     updatePlots;
                     advance;
-                end    
-                
+                end
+
             case 'x' % set undefined
                 G.labels(G.index) = G.n_states+1;
                 G.unsavedChanges = 1;
                 updateState;
                 updatePlots;
                 advance;
-           
+
             case 'f' % save file
                 saveFile();
-                
+
             case 'h' % show help menu
                 showHelp(G.A1, []);
-                
+
             case 'multiply' % apply label to range of timepoints
                 t = text(G.A5,18.75,-.9,sprintf(['Move the ROI\n',...
                     'boundaries,\nand then\ndouble-click it',...
@@ -564,7 +574,7 @@ message = 'Data loaded successfully';
                     delete(t);
                     return
                 end
-                
+
                 [label,~] = listdlg('PromptString','Set label to:',...
                     'SelectionMode','single',...
                     'ListString',[G.config.cfg_names;{'Undefined'}]);
@@ -572,7 +582,7 @@ message = 'Data loaded successfully';
                     delete(t);
                     return
                 end
-                
+
                 idx1 = max([1,rectPosition(1)]); % starting index
                 idx2 = min([G.nbins,rectPosition(1)+rectPosition(3)]); % ending index
                 G.labels(idx1 : idx2) = label;
@@ -801,7 +811,7 @@ message = 'Data loaded successfully';
             return
         end
         if checkLen
-            if length(x.labels) ~= G.nbins 
+            if length(x.labels) ~= G.nbins
                 msgbox(['Error: labels must be of length ',num2str(G.nbins)])
                 return
             end
