@@ -79,6 +79,7 @@ clear('EMG','EEG');
 
 % create spectrogram and process EMG at a standard SR (128)
 [spec, tAxis, fAxis] = createSpectrogram(standardizeSR(G.EEG, G.originalSR, G.SR), G.SR, G.epochLen);
+spec = 10 * log10( spec );
 G.processedEMG = processEMG(standardizeSR(G.EMG, G.originalSR, G.SR), G.SR, G.epochLen);
 % set ceiling for EMG trace at 2.5 SD when plotting
 G.cappedEMG = G.processedEMG;
@@ -125,7 +126,7 @@ end
 % take a sample of the spectrogram to help initialize the colormap
 sampleBins = randperm(G.nbins, round(G.nbins/10));
 specSample = reshape(spec(sampleBins,showFreqs),1,length(sampleBins)*length(showFreqs));
-G.caxis1 = prctile(specSample,[6 98]);
+G.caxis1 = prctile(specSample,[5 99]);
 G.cmax = G.caxis1(2);
 clear spec
 
@@ -280,7 +281,8 @@ colormap(G.A3,G.colormap);
 G.lims = xlim(G.A3); % store maximum x limits for the upper panel plots
 
 % plot processed EMG
-plot(G.A4,G.specTh,G.cappedEMG,'k')
+G.grey = [ 0.3 0.3 0.3 ];
+plot(G.A4,G.specTh,G.cappedEMG,'Color', G.grey )
 yr = max(G.cappedEMG) - min(G.cappedEMG); % adjust y limits
 set(G.A4,'XTick',[],'YTick',[],'box','off',...
     'YLim',[min(G.cappedEMG) - .02*yr, max(G.cappedEMG) + .02*yr])
@@ -349,7 +351,7 @@ message = 'Data loaded successfully';
         xlim(G.A6,[t(1)-G.dt t(end)]);
         ylim(G.A6,G.emgYlim);
         set(G.A6, 'XLimMode','manual', 'YLimMode','manual');
-        line(G.A6,t, G.EMG(ii), 'Color','k', 'LineWidth', 1); % plot EMG
+        line(G.A6,t, G.EMG(ii), 'Color', G.grey, 'LineWidth', 0.5); % plot EMG
         % plot indicator for current time bin
         line(G.A6,ones(1,2).*(G.timepointS-G.epochLen/2), [G.emgYlim(1),...
             G.emgYlim(1)+.1*diff(G.emgYlim)],'Color','r','LineWidth', .5);
@@ -363,7 +365,7 @@ message = 'Data loaded successfully';
         xlim(G.A6a,[t(1)-G.dt t(end)]);
         ylim(G.A6a,G.eegYlim);
         set(G.A6a, 'XLimMode','manual', 'YLimMode','manual');
-        line(G.A6a,t, G.EEG(ii), 'Color','k', 'LineWidth', 1); % plot eeg
+        line(G.A6a,t, G.EEG(ii), 'Color', G.grey, 'LineWidth',0.5); % plot eeg
         line(G.A6a,ones(1,2).*(G.timepointS-G.epochLen/2), [G.eegYlim(2),...
             G.eegYlim(2)-.1*diff(G.eegYlim)],'Color','r', 'LineWidth', .5);
         line(G.A6a,ones(1,2).*(G.timepointS+G.epochLen/2), [G.eegYlim(2),...
