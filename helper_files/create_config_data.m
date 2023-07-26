@@ -5,16 +5,20 @@ function create_config_data( replace )
 % replace: boolean to either repalce or not the old config file. If false,
 % a copy with "_old" sufix will be created.
 
-% set colors to
+% set colors to R -> B, N -> G, W -> R;
 dummy = brewermap( 3, 'Set1' );
-colores = [ dummy( 1, : ); dummy( 3, : ); dummy( 2, : ) ];
+colores = [ dummy( 2, : ); dummy( 1, : ); dummy( 3, : ) ];
+
 names = { 'REM', 'Wake', 'NREM' };
+% names = { 'REM', 'NREM', 'Wake' };
+
 weights = [ 0.1 0.35 0.55 ];
+% weights = [ 0.1 0.55 0.35 ];
 
 for i = 1 : numel( names )
     cfg_colors{ i } = colores( i, : );
     cfg_names{ i } = names{ i };
-    cfg_weights{ i } = weights( i );
+    cfg_weights( i ) = weights( i );
 
 end
 
