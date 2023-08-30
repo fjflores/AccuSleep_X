@@ -1,7 +1,8 @@
 # AccuSleep
 
 ## Updates
-**06/12/2021** - Initial release of AccuSleep X. 
+**2021-Jun-12** - Initial release of AccuSleep X
+**2023-Jul-27** - Release of fjflores changes
 
 ## Description
 
@@ -19,6 +20,13 @@ Please contact zekebarger (at) gmail (dot) com with any questions or comments ab
 
 ## Acknowledgements
 We would like to thank Franz Weber for creating an early version of the manual labeling interface.
+
+## Changes to original code
+- The color of EEG and EMG lines has been changed to dark grey, and their width was decreased a bit
+- The default colormap is now magma. If not present, it will default to AS colormap, or jet if AS is not present
+- The spectrogram is displayed as power in dB rather than as amplitudes
+- The EMG is filtered between 200 - 700 Hz to match our recording conditions
+- States colors have been changed to use the first three in the Set1 of the Brewermap.
 
 
 ## Screenshots
