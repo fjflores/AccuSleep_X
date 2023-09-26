@@ -34,4 +34,5 @@ Primary interface (AccuSleep_GUI_X)
 ![alt test](https://i.imgur.com/W0alwkx.png)
 
 Interface for manual sleep scoring (AccuSleep_viewer_X)
-![alt test](helper_files/FF_AccuSleep_X.png)
+![alt test](https://github.com/fjflores/AccuSleep_X/blob/main/helper_files/AccuSleep_X_Viewer?raw=true)
+
